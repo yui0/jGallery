@@ -5,6 +5,7 @@ $subject = "連絡です。";
 
 // for index.php
 $path = "./data/";
+$database = 1;	// csv
 
 $title = "Gallery";
 $base_url = "https://github.com/yui0/gallery.git";

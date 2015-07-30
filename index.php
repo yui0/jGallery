@@ -35,33 +35,43 @@ foreach (glob($path."*") as $value) { // ディレクトリ内を見る
 	}
 }
 
-//$lines = file($path.'list.txt');
-/*$file = new SplFileObject($path.'list.csv');
-$file->setFlags(SplFileObject::READ_CSV);
-foreach ($file as $line) {
-	$records[] = $line;
-}*/
-if (file_exists($path.'list.db') == false) {
-	$pdo = new PDO('sqlite:'.$path.'list.db');
-	import_csv_to_sqlite($pdo, $path.'list.csv', array("table" => "list", "fields" => array("id", "comments", "flag")));
-} else {
-	$pdo = new PDO('sqlite:'.$path.'list.db');
-}
-$sql = "select * from list";
-$statement = $pdo->query($sql);
-
 $images = "";
 $explanation = array('', ' [問い合わせ中]', ' [済]');
-/*$i = 0;
-foreach ($files as $file) {
-	$s = $records[$i][1].$explanation[$records[$i][2]];
-	$i++;
-	$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$i." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
-}*/
-foreach ($statement as $row) {
-	$s = $row["comments"].$explanation[$row["flag"]];
-	$file = $files[($row["id"]-1)];
-	$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$row["id"]." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
+
+switch ($database) {
+case 0:
+	$records = file($path.'list.txt');
+	break;
+case 1:
+	$file = new SplFileObject($path.'list.csv');
+	$file->setFlags(SplFileObject::READ_CSV);
+	foreach ($file as $line) {
+		$records[] = $line;
+	}
+	break;
+case 2:
+	if (file_exists($path.'list.db') == false) {
+		$pdo = new PDO('sqlite:'.$path.'list.db');
+		import_csv_to_sqlite($pdo, $path.'list.csv', array("table" => "list", "fields" => array("id", "comments", "flag")));
+	} else {
+		$pdo = new PDO('sqlite:'.$path.'list.db');
+	}
+	$sql = "select * from list";
+	$statement = $pdo->query($sql);
+
+	foreach ($statement as $row) {
+		$s = $row["comments"].$explanation[$row["flag"]];
+		$file = $files[($row["id"]-1)];
+		$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$row["id"]." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
+	}
+}
+if ($database <2) {
+	$i = 0;
+	foreach ($files as $file) {
+		$s = $records[$i][1].$explanation[$records[$i][2]];
+		$i++;
+		$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$i." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
+	}
 }
 ?>
 <!DOCTYPE html>
