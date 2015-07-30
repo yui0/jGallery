@@ -4,6 +4,10 @@
 
 A simple, stunning, powerful jQuery gallery. 
 
+## Demo
+
+https://jgallery.herokuapp.com/
+
 ## Technologies
 
 - jQuery / HTML5 / PHP
