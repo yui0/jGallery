@@ -1,6 +1,6 @@
 {
 	"require": {
-		"gd": "*",
+		"ext-gd": "*",
 		"ext-mbstring": "*",
 		"ext-pdo_sqlite": "*"
 	}
