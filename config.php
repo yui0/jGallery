@@ -4,7 +4,7 @@ $myemail = 'abc@gmail.com';
 $subject = "連絡です。";
 
 // for index.php
-$path = "./data/";
+$path = "data/";
 $database = 1;	// csv
 
 $title = "Gallery";
