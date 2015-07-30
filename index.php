@@ -1,7 +1,9 @@
 <?php
-require 'config.php';
+mb_language('ja');
+mb_internal_encoding('UTF-8');
 
-$path = "./images/";
+require 'config.php';
+require 'import_csv_to_sqlite.php';
 
 function img_rsz($path, $file)
 {
@@ -33,13 +35,33 @@ foreach (glob($path."*") as $value) { // ディレクトリ内を見る
 	}
 }
 
-$lines = file($path.'list.txt');
+//$lines = file($path.'list.txt');
+/*$file = new SplFileObject($path.'list.csv');
+$file->setFlags(SplFileObject::READ_CSV);
+foreach ($file as $line) {
+	$records[] = $line;
+}*/
+if (file_exists($path.'list.db') == false) {
+	$pdo = new PDO('sqlite:'.$path.'list.db');
+	import_csv_to_sqlite($pdo, $path.'list.csv', array("table" => "list", "fields" => array("id", "comments", "flag")));
+} else {
+	$pdo = new PDO('sqlite:'.$path.'list.db');
+}
+$sql = "select * from list";
+$statement = $pdo->query($sql);
 
-$i = 0;
 $images = "";
+$explanation = array('', ' [問い合わせ中]', ' [済]');
+/*$i = 0;
 foreach ($files as $file) {
-	$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".($i+1)." ".$lines[$i]."\"><img src=\"".$path."_".$file."\"></a>\n";
+	$s = $records[$i][1].$explanation[$records[$i][2]];
 	$i++;
+	$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$i." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
+}*/
+foreach ($statement as $row) {
+	$s = $row["comments"].$explanation[$row["flag"]];
+	$file = $files[($row["id"]-1)];
+	$images .= "\t<a href=\"".$path.$file."\" data-caption=\"№".$row["id"]." ".$s."\"><img src=\"".$path."_".$file."\"></a>\n";
 }
 ?>
 <!DOCTYPE html>
@@ -47,6 +69,9 @@ foreach ($files as $file) {
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
+	<link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon.png">
+	<link rel="shortcut icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
+	<link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
 
 	<title><?= $title ?></title>
 
@@ -90,13 +115,13 @@ foreach ($files as $file) {
 		data-arrows="false" data-click="true" data-swipe="true"
 		data-keyboard='{"space": true, "home": true, "end": true, "up": true, "down": true, "left": true, "right": true}'
 		data-nav="thumbs" data-thumbheight="48">
-	<?= $images ?>
+<?= $images ?>
 	</div>
 </div>
 
 <br>
 <div class="row text-center">
-	<button class="btn btn-primary" data-toggle="modal" data-target="#myModal"><?= $button ?></button>
+	<button class="btn btn-primary" data-toggle="modal" data-target="#myModal"><?= $button ?></button><?= $admin_button ?>
 </div>
 <br>
 <div class="row">
@@ -133,11 +158,16 @@ jQuery(function($){
 	$("input#submit").click(function(){
 		$.ajax({
 			type: "POST",
-			url: "process.php", // process to mail
+			url: "mail.php", // process to mail
 			data: $('.contact').serialize(),
 			success: function(msg){
 				$("#thanks").html(msg) // hide button and show thank you
 				$("#myModal").modal('hide'); // hide popup  
+
+				$.ajax({
+					url: "process.php",
+					data: 'id='+index+'&f=1'
+				});
 			},
 			error: function(){
 				alert("送信に失敗しました。");
@@ -145,12 +175,41 @@ jQuery(function($){
 		});
 	});
 
-	$('.fotorama').on('fotorama:show', function (e, fotorama, direct) {
-		//console.log(e.type, direct);
+	var index = 1;
+	$('.fotorama').on('fotorama:show', function(e, fotorama, direct){
+		index = fotorama.activeIndex+1;
 		//$('#number').text((fotorama.activeIndex + 1) + '/' + fotorama.size);
 		$('#message').val('No.' + (fotorama.activeIndex + 1) + '<?= $about ?>');
 	})
 	.fotorama();
+
+	$('#check1').on('click', function(e){
+		$.ajax({
+			type: "GET",
+			url: "process.php",
+			data: 'id='+index+'&f=2',
+			success: function(msg){
+				//alert(msg+'id='+index+'&f=2');
+				location.reload();
+			},
+			error: function(){
+				alert("失敗しました。");
+			}
+		});
+	})
+	$('#check2').on('click', function(e){
+		$.ajax({
+			type: "GET",
+			url: "process.php",
+			data: 'id='+index+'&f=0',
+			success: function(){
+				location.reload();
+			},
+			error: function(){
+				alert("失敗しました。");
+			}
+		});
+	})
 });
 </script>
 </div><!-- /.container -->

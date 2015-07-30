@@ -4,7 +4,8 @@ A simple, stunning, powerful jQuery gallery.
 
 ## Technologies
 
-- jQuery / HTML5
+- jQuery / HTML5 / PHP
 - Fotorama (http://fotorama.io/)
-- PHP
+- bootstrap / honoka (http://honokak.osaka/)
+- SQLite or CSV or TEXT
 
