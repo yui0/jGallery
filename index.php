@@ -102,7 +102,7 @@ if ($database <2) {
 	<link href="fotorama.css" rel="stylesheet">
 	<script src="fotorama.js"></script>
 	<!-- Just don’t want to repeat this prefix in every img[src] -->
-	<base href="<?= $base_url ?>">
+	<!-- <base href="<?= $base_url ?>"> -->
 </head>
 
 <body>
