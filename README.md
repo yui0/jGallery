@@ -1,5 +1,7 @@
 # jGallery
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/yui0/jGallery)
+
 A simple, stunning, powerful jQuery gallery. 
 
 ## Technologies
