@@ -1,5 +1,7 @@
 {
 	"require": {
+		"gd": "*",
+		"ext-mbstring": "*",
 		"ext-pdo_sqlite": "*"
 	}
 }
