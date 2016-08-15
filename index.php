@@ -86,7 +86,7 @@ if ($database <2) {
 	<title><?= $title ?></title>
 
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/honoka.css">
+	<!--<link rel="stylesheet" type="text/css" href="css/honoka.css">-->
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 	<!--[if lt IE 9]>
@@ -174,10 +174,12 @@ jQuery(function($){
 				$("#thanks").html(msg) // hide button and show thank you
 				$("#myModal").modal('hide'); // hide popup  
 
-				$.ajax({
-					url: "process.php",
-					data: 'id='+index+'&f=1'
-				});
+				if (msg.indexOf("warning") == -1) {
+					$.ajax({
+						url: "process.php",
+						data: 'id='+index+'&f=1'
+					});
+				}
 			},
 			error: function(){
 				alert("送信に失敗しました。");
@@ -206,7 +208,7 @@ jQuery(function($){
 				alert("失敗しました。");
 			}
 		});
-	})
+	});
 	$('#check2').on('click', function(e){
 		$.ajax({
 			type: "GET",
@@ -219,7 +221,7 @@ jQuery(function($){
 				alert("失敗しました。");
 			}
 		});
-	})
+	});
 });
 </script>
 </div><!-- /.container -->
